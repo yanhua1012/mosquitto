@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "mosquitto.exe (src\\mosquitto.exe)",
+      "name": "mosquitto.exe (src\\mosquitto.exe)",
+      "args": [
+        "-v"
+      ]
+    }
+  ]
+}

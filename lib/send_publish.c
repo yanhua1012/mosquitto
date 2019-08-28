@@ -36,6 +36,10 @@ Contributors:
 #include "property_mosq.h"
 #include "send_mosq.h"
 
+#include <sys/timeb.h>
+#include <time.h>
+
+
 
 int send__publish(struct mosquitto *mosq, uint16_t mid, const char *topic, uint32_t payloadlen, const void *payload, int qos, bool retain, bool dup, const mosquitto_property *cmsg_props, const mosquitto_property *store_props, uint32_t expiry_interval)
 {
@@ -211,5 +215,19 @@ int send__real_publish(struct mosquitto *mosq, uint16_t mid, const char *topic, 
 		packet__write_bytes(packet, payload, payloadlen);
 	}
 
-	return packet__queue(mosq, packet);
+	char beginTimeline[26], endTimeline[26];
+
+	struct _timeb beginTime;
+	_ftime64_s(&beginTime);
+	ctime_s(beginTimeline, 26, &(beginTime.time));
+	log__printf(NULL, MOSQ_LOG_DEBUG, "Begin send to network %s at %.19s.%hu %s", mosq->id, beginTimeline, beginTime.millitm, &beginTimeline[20]);
+	
+	int rtnVal = packet__queue(mosq, packet);
+
+	struct _timeb endTime;
+	_ftime64_s(&endTime);
+	ctime_s(endTimeline, 26, &(endTime.time));
+	log__printf(NULL, MOSQ_LOG_DEBUG, "Finish send to network %s at %.19s.%hu %s", mosq->id, endTimeline, endTime.millitm, &endTimeline[20]);
+
+	return rtnVal;
 }
